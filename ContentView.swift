@@ -9,7 +9,7 @@ struct ContentView: View {
                 bgColor.ignoresSafeArea()
 
                 VStack {
-                    Timer()
+                    countdownTimer()
                 }
             }
             .toolbar {
