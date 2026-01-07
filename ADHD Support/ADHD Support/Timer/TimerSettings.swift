@@ -15,6 +15,7 @@ struct TimerSettings: View {
     @AppStorage("vibrateOnSessionEnd") private var vibrateOnSessionEnd: Bool = true
     @AppStorage("soundOnSessionEnd") private var soundOnSessionEnd: Bool = true
     @AppStorage("autoStartNextSession") private var autoStartNextSession: Bool = false
+    @AppStorage("AmbientEnabled") private var ambientEnabled: Bool = true
     
     @AppStorage("appTheme") private var appThemeRaw: String = AppTheme.classic.rawValue
     
@@ -48,11 +49,17 @@ struct TimerSettings: View {
                 Toggle("Automatically start next session", isOn: $autoStartNextSession)
                 //removes one decision between blocks which can help adhd users stay in flow
             }
+            Section(header: Text("Ambience")) {
+                Toggle("Play ambient sound", isOn: $ambientEnabled)
+            }
            
             Section(footer: Text("Sounds and vibration still respect the iPhone mute switch and system Focus settings.")) {
                 EmptyView()
             }
+            
+
         }
+        
         .navigationTitle("Settings")
     }
 }
