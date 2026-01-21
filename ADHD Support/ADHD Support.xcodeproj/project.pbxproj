@@ -10,9 +10,22 @@
 		441986DB2ECD4ADB00AEE4A9 /* ADHD Support.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "ADHD Support.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		44C07B372F205A7E003786E9 /* Exceptions for "ADHD Support" folder in "ADHD Support" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Timer/Theme/Untitled.swift,
+			);
+			target = 441986DA2ECD4ADB00AEE4A9 /* ADHD Support */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		441986DD2ECD4ADB00AEE4A9 /* ADHD Support */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				44C07B372F205A7E003786E9 /* Exceptions for "ADHD Support" folder in "ADHD Support" target */,
+			);
 			path = "ADHD Support";
 			sourceTree = "<group>";
 		};

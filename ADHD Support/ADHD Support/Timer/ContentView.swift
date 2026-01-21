@@ -39,9 +39,20 @@ struct ContentView: View {
                         
                     }
                 }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    NavigationLink {
+                        MLTestView()
+                    } label: {
+                        Image(systemName: "brain")
+                            .foregroundStyle(.white)
+                    }
+                }
+
+                
             }
             .toolbarBackground(bgColor, for: .navigationBar)
             .toolbarBackground(.hidden, for: .navigationBar)
+            
         }
     }
 }
