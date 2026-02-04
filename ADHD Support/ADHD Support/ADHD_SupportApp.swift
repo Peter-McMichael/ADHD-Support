@@ -9,7 +9,7 @@ import SwiftUI
 
 @main
 struct ADHD_SupportApp: App {
-    
+    @StateObject private var todoStorage = TodoStorage()
     init() {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()

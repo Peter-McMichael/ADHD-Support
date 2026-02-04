@@ -22,31 +22,39 @@ enum AppTheme: String, CaseIterable, Identifiable, Equatable {
         }
     }
     
-    var background: LinearGradient {
-        switch self {
-        case .classic:
-            //matches the original bgColor.
-            return LinearGradient(colors: [ Color(red: 11/255, green: 90/255, blue: 133/255)], startPoint: .top,
-                                  endPoint: .bottom
-            )
-        case .rain:
-            //matches the original bgColor.
-            return LinearGradient(colors: [
-                Color(red: 8/255, green: 18/255, blue: 32/255),
-                Color(red: 16/255, green: 36/255, blue: 64/255)
-            ],
-                                  startPoint: .top,
-                                  endPoint: .bottom
-            )
+    var background: AnyView {
+            switch self {
+            case .classic:
+                return AnyView(
+                    LinearGradient(
+                        colors: [Color(red: 11/255, green: 90/255, blue: 133/255)],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .ignoresSafeArea()
+                )
+
+
+            case .rain:
+                return AnyView(
+                    LinearGradient(
+                        colors: [
+                            Color(red: 8/255, green: 18/255, blue: 32/255),
+                            Color(red: 16/255, green: 36/255, blue: 64/255)
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .ignoresSafeArea()
+                )
+
+
+
             
         case .field:
-            return LinearGradient(colors: [
-                Color(red: 8/255, green: 18/255, blue: 32/255),
-                Color(red: 16/255, green: 36/255, blue: 64/255)
-                
-            ],
-                                  startPoint: .top,
-                                  endPoint: .bottom
+            return AnyView(
+                GrassyField()
+                    .ignoresSafeArea()
             )
             
         }
