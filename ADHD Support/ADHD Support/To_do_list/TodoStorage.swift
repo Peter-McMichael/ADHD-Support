@@ -45,6 +45,7 @@ final class TodoStorage: ObservableObject {
 
         //ask the ml model what category this task probably belongs to
         let prediction = TaskClassifier.shared.predictCategory(for: cleanTitle)
+        let category = PrioritiesClassifier.shared.predictPriority(for: cleanTitle)
 
 
         //build the new task object we will store
@@ -154,6 +155,10 @@ final class TodoStorage: ObservableObject {
             print("Todo load error: \(error)")
             tasks = []
         }
+    }
+    
+    func clearCompleted() {
+        tasks.removeAll { $0.isDone }
     }
 }
 

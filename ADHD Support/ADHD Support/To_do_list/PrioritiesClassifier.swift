@@ -1,4 +1,12 @@
 //
+//  PrioritiesClassifier.swift
+//  ADHD Support
+//
+//  Created by Peter McMichael on 2/5/26.
+//
+
+
+
 //  TaskClassifier.swift
 //  ADHD Support
 //
@@ -8,13 +16,13 @@
 import Foundation
 import CoreML
 
-final class TaskClassifier {
-    static let shared = TaskClassifier()
+final class PrioritiesClassifier {
+    static let shared = PrioritiesClassifier()
     
-    private let model: Todo_list?
+    private let model: Priorities?
     
     private init() {
-        model = try? Todo_list(configuration: MLModelConfiguration())
+        model = try? Priorities(configuration: MLModelConfiguration())
     }
     
     struct Prediction {
@@ -25,7 +33,7 @@ final class TaskClassifier {
         static let error = Prediction(label: "Error", confidence: 0.0)
     }
     
-    func predictCategory(for text: String) -> Prediction {
+    func predictPriority(for text: String) -> Prediction {
         guard let model else { return.unknown }
         
         let trimmed = text.trimmed
@@ -53,7 +61,7 @@ private extension String {
     }
 }
 
-private extension Todo_listOutput {
+private extension PrioritiesOutput {
     func bestConfidence() -> Double {
         let mirror = Mirror(reflecting: self)
         

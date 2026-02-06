@@ -26,8 +26,9 @@ struct ContentView: View {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Image("Logo")
                         .resizable()
-                        .frame(width: 153, height: 102)
-                        .padding(.top, 40)   // keep this fine
+                        .scaledToFit()
+                        .frame(width: 153, height: 90)
+                        .padding(.leading, 2)   // keep this fine
                 }
                 
                 ToolbarItem(placement: .navigationBarTrailing) {

@@ -11,6 +11,7 @@ enum Priority: String, Codable, CaseIterable, Identifiable {
     case low
     case medium
     case high
+    case URGENT
     
     var id: String {rawValue}
     var title: String {
@@ -18,13 +19,16 @@ enum Priority: String, Codable, CaseIterable, Identifiable {
         case .low: return "Low"
         case .medium: return "Medium"
         case .high: return "High"
+        case .URGENT: return "URGENT"
         }
     }
     var sortRank: Int {
         switch self {
-        case .high: return 0
-        case .medium: return 1
-        case .low: return 2
+        case .URGENT: return 0
+        case .high: return 1
+        case .medium: return 2
+        case .low: return 3
+        
         }
     }
 }

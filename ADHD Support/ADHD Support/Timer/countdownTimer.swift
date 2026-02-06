@@ -122,9 +122,14 @@ struct countdownTimer: View {
             HStack(spacing: 20) {
                
 
-                Button(action: resetCurrentSession) {
-                    Text("Reset")
-                        .frame(maxWidth: .infinity)
+                Button {
+                   resetCurrentSession()
+                } label: {
+                    Image(systemName: "arrow.clockwise")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 30)
+                        .foregroundStyle(theme.focusColor)
                 }
             }
 

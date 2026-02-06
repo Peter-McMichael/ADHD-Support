@@ -74,13 +74,25 @@ struct TodoListView: View {
             .listStyle(.insetGrouped)
             .navigationTitle("To-Do")
             .tint(theme.focusColor)
+            
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        store.clearCompleted()
+                    } label: {
+                        Image(systemName: "trash")
+                    }
+                }
+            }
         }
     }
     private func addTask() {
         let cleanTitle = draftTitle.trimmed
         guard !cleanTitle.isEmpty else { return }
         
-        store.addTask(title: cleanTitle, priority: chosenPriority)
+        let priorityPrediction = PrioritiesClassifier.shared.predictPriority(for: cleanTitle)
+        let finalPriority: Priority = Priority(rawValue: priorityPrediction.label) ?? chosenPriority
+        store.addTask(title: cleanTitle, priority: finalPriority)
         
         draftTitle = ""
         chosenPriority = .medium
