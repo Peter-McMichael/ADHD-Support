@@ -40,16 +40,28 @@ enum TodoCategory: String, Codable, CaseIterable, Identifiable {
     case longProject = "LongProject"
     case extracurricular = "Extracurricular"
     case chores = "Chores"
+    case events = "Events"
+    case errands = "Errands"
+    case personal = "Personal"
+    case social = "Social"
+    case entertainment = "Entertainment"
+    case health_fitness = "Health/Fitess"
     case other = "Other"
     
     var id: String { rawValue }
     
     static let displayOrder: [TodoCategory] = [
+        .personal,
         .testPrep,
+        .social,
+        .errands,
+        .events,
         .extracurricular,
         .longProject,
         .homework,
         .chores,
+        .health_fitness,
+        .entertainment,
         .other
     ]
     
@@ -60,6 +72,12 @@ enum TodoCategory: String, Codable, CaseIterable, Identifiable {
         case .longProject: return "Long Project"
         case .extracurricular: return "Extracurricular"
         case .chores: return "Chores"
+        case .events: return "Events"
+        case .errands: return "Errands"
+        case .personal: return "Personal"	
+        case .social: return "Social"
+        case .entertainment: return "Entertainment"
+        case .health_fitness: return "Health/Fitness"
         case .other: return "Other"
         }
     }

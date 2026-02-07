@@ -5,15 +5,15 @@ struct MLTestView: View {
     @State private var predictedLabel: String = "—"
     @State private var topProbabilities: [(String, Double)] = []
     
-    private let model: Priorities?
+    private let model: Todo_list?
     private let modelInitError: Error?
     
     init() {
-        var builtModel: Priorities?
+        var builtModel: Todo_list?
         var initError: Error?
         do {
             let configuration = MLModelConfiguration()
-            builtModel = try Priorities(configuration: configuration)
+            builtModel = try Todo_list(configuration: configuration)
         } catch {
             initError = error
             builtModel = nil
