@@ -12,6 +12,7 @@ enum AppTheme: String, CaseIterable, Identifiable, Equatable {
     case rain
     case field
     case underwater
+    case space
     
     var id: String { rawValue }
     
@@ -21,6 +22,7 @@ enum AppTheme: String, CaseIterable, Identifiable, Equatable {
         case .rain: return "Rain"
         case .field: return "Field"
         case .underwater: return "Underwater"
+        case .space: return "Space"
         }
     }
     
@@ -63,6 +65,11 @@ enum AppTheme: String, CaseIterable, Identifiable, Equatable {
                     UnderwaterWaveBackground()
                         .ignoresSafeArea()
                 )
+            case .space:
+                return AnyView(
+                    Space_T()
+                        .ignoresSafeArea()
+                )
             
         }
     }
@@ -73,6 +80,7 @@ enum AppTheme: String, CaseIterable, Identifiable, Equatable {
         case .rain: return Color(red: 140/255, green: 210/255, blue: 255/255) //icy blue
         case .field: return .green
         case .underwater: return Color(red: 9/255, green: 154/255, blue: 237/255)
+        case .space: return Color(red: 120/255, green: 180/255, blue: 255/255)
         }
     }
     
@@ -82,7 +90,7 @@ enum AppTheme: String, CaseIterable, Identifiable, Equatable {
         case .rain: return Color(red: 170/255, green: 255/255, blue: 220/255)
         case .field: return .green
         case .underwater: return Color(red: 17/255, green: 212/255, blue: 205/255) //aquamarine
-        
+        case .space: return Color(red: 180/255, green: 140/255, blue: 255/255)
         }
     }
     
@@ -92,6 +100,7 @@ enum AppTheme: String, CaseIterable, Identifiable, Equatable {
         case .rain: return true
         case .field: return false
         case .underwater: return false
+        case .space: return false
         }
     }
     
@@ -110,6 +119,8 @@ enum AppTheme: String, CaseIterable, Identifiable, Equatable {
             return nil
         case .underwater:
             return AmbientSound(name: "UnderwaterLoop", ext: "mp3")
+        case .space:
+            return AmbientSound(name: "SpaceHum", ext: "mp3")
         }
     }
     struct UnderwaterWaveBackground: View {
