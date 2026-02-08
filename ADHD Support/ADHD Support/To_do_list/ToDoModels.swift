@@ -45,7 +45,7 @@ enum TodoCategory: String, Codable, CaseIterable, Identifiable {
     case personal = "Personal"
     case social = "Social"
     case entertainment = "Entertainment"
-    case health_fitness = "Health/Fitess"
+    case health_fitness = "Health/Fitness"
     case other = "Other"
     
     var id: String { rawValue }
@@ -105,7 +105,19 @@ enum TodoCategory: String, Codable, CaseIterable, Identifiable {
             self = .extracurricular
         case "chores", "chore":
             self = .chores
-        default:
+        case "events", "event":
+            self = .events
+        case "errands", "errand":
+            self = .errands
+        case "personal":
+            self = .personal
+        case "social":
+            self = .social
+        case "entertainment", "fun":
+            self = .entertainment
+        case "healthfitness", "health", "fitness":
+            self = .health_fitness
+        default: // if not in a category or unrecognized
             self = .other
         }
         

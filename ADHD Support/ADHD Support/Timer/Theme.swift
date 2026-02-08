@@ -11,6 +11,7 @@ enum AppTheme: String, CaseIterable, Identifiable, Equatable {
     case classic
     case rain
     case field
+    case underwater
     
     var id: String { rawValue }
     
@@ -19,6 +20,7 @@ enum AppTheme: String, CaseIterable, Identifiable, Equatable {
         case .classic: return "Classic"
         case .rain: return "Rain"
         case .field: return "Field"
+        case .underwater: return "Underwater"
         }
     }
     
@@ -56,6 +58,11 @@ enum AppTheme: String, CaseIterable, Identifiable, Equatable {
                 GrassyField()
                     .ignoresSafeArea()
             )
+            case .underwater:
+                return AnyView(
+                    UnderwaterWaveBackground()
+                        .ignoresSafeArea()
+                )
             
         }
     }
@@ -65,6 +72,7 @@ enum AppTheme: String, CaseIterable, Identifiable, Equatable {
         case .classic: return .green
         case .rain: return Color(red: 140/255, green: 210/255, blue: 255/255) //icy blue
         case .field: return .green
+        case .underwater: return Color(red: 9/255, green: 154/255, blue: 237/255)
         }
     }
     
@@ -73,6 +81,8 @@ enum AppTheme: String, CaseIterable, Identifiable, Equatable {
         case .classic: return .blue
         case .rain: return Color(red: 170/255, green: 255/255, blue: 220/255)
         case .field: return .green
+        case .underwater: return Color(red: 17/255, green: 212/255, blue: 205/255) //aquamarine
+        
         }
     }
     
@@ -81,6 +91,7 @@ enum AppTheme: String, CaseIterable, Identifiable, Equatable {
         case .classic: return false
         case .rain: return true
         case .field: return false
+        case .underwater: return false
         }
     }
     
@@ -97,6 +108,83 @@ enum AppTheme: String, CaseIterable, Identifiable, Equatable {
             return AmbientSound(name: "RainLoop02", ext: "mp3")
         case.field:
             return nil
+        case .underwater:
+            return AmbientSound(name: "UnderwaterLoop", ext: "mp3")
+        }
+    }
+    struct UnderwaterWaveBackground: View {
+
+        var body: some View {
+            TimelineView(.animation) { timeline in
+                let t = timeline.date.timeIntervalSinceReferenceDate
+
+                ZStack {
+
+                    //deep ocean gradient
+                    LinearGradient(
+                        colors: [
+                            Color(red: 5/255, green: 20/255, blue: 50/255),
+                            Color(red: 0/255, green: 70/255, blue: 95/255),
+                            Color(red: 40/255, green: 140/255, blue: 160/255)
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+
+                    //back wave
+                    WaveShape(
+                        amplitude: 18,
+                        wavelength: 260,
+                        phase: t * 0.6
+                    )
+                    .fill(Color.white.opacity(0.10))
+                    .offset(y: -40)
+
+                    //middle wave
+                    WaveShape(
+                        amplitude: 14,
+                        wavelength: 200,
+                        phase: t * 0.9
+                    )
+                    .fill(Color.white.opacity(0.12))
+                    .offset(y: -10)
+
+                    //front wave
+                    WaveShape(
+                        amplitude: 10,
+                        wavelength: 150,
+                        phase: t * 1.3
+                    )
+                    .fill(Color.white.opacity(0.16))
+                    .offset(y: 20)
+                }
+            }
+        }
+    }
+
+
+    //MARK: - wave shape helper
+    struct WaveShape: Shape {
+
+        var amplitude: CGFloat
+        var wavelength: CGFloat
+        var phase: Double
+
+        func path(in rect: CGRect) -> Path {
+            var path = Path()
+            path.move(to: CGPoint(x: 0, y: rect.midY))
+
+            for x in stride(from: 0, through: rect.width, by: 1) {
+                let relative = x / wavelength
+                let y = rect.midY + sin(relative + phase) * amplitude
+                path.addLine(to: CGPoint(x: x, y: y))
+            }
+
+            path.addLine(to: CGPoint(x: rect.width, y: rect.height))
+            path.addLine(to: CGPoint(x: 0, y: rect.height))
+            path.closeSubpath()
+
+            return path
         }
     }
     
