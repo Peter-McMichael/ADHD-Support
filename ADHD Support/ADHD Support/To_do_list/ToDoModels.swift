@@ -129,24 +129,33 @@ struct TodoItem: Identifiable, Codable {
     let id: UUID
     var title: String
     var isDone: Bool
-    var priority: Priority
     var createdAt: Date
+    
+    var predictedPriority: Priority
+    var priorityConfidence: Double
     
     
     var categoryLabel: String
     var categoryConfidence: Double
     
+    var userPriorityOverride: Priority?
     
-    init(title: String, priority: Priority, categoryLabel: String, categoryConfidence: Double) {
+    
+    init(title: String, predictedPriority: Priority, priorityConfidence: Double, categoryLabel: String, categoryConfidence: Double, userPriorityOverride: Priority?) {
         self.id = UUID()
         self.title = title
         self.isDone = false
-        self.priority = priority
+        self.predictedPriority = predictedPriority
+        self.priorityConfidence = priorityConfidence
         self.createdAt = Date()
         self.categoryLabel = categoryLabel
         self.categoryConfidence = categoryConfidence
+        self.userPriorityOverride = userPriorityOverride
     }
     
+    var effectivePriority: Priority {
+        userPriorityOverride ?? predictedPriority
+    }
     
     var category: TodoCategory {
         TodoCategory(rawLabel: categoryLabel)

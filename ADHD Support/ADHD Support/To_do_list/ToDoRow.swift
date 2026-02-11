@@ -1,17 +1,31 @@
-//
-//  ToDoRow.swift
-//  ADHD Support
-//
-//  Created by Peter McMichael on 2/3/26.
-//
-
 import SwiftUI
 
 struct TodoRow: View {
     let task: TodoItem
     let theme: AppTheme
     let onToggle: () -> Void
-    
+
+    //WHY: row needs a way to send changes back up
+    //HOW: parent passes in a closure that updates storage
+    let onSetPriorityOverride: (Priority?) -> Void
+
+    //WHY: task is a value, so we keep local selection state for the picker
+    //HOW: nil means Auto, otherwise it is the user override
+    @State private var selectedOverride: Priority?
+
+    init(
+        task: TodoItem,
+        theme: AppTheme,
+        onToggle: @escaping () -> Void,
+        onSetPriorityOverride: @escaping (Priority?) -> Void
+    ) {
+        self.task = task
+        self.theme = theme
+        self.onToggle = onToggle
+        self.onSetPriorityOverride = onSetPriorityOverride
+        _selectedOverride = State(initialValue: task.userPriorityOverride)
+    }
+
     var body: some View {
         HStack(spacing: 12) {
             Button(action: onToggle) {
@@ -20,17 +34,55 @@ struct TodoRow: View {
                     .foregroundStyle(task.isDone ? .secondary : theme.focusColor)
             }
             .buttonStyle(.plain)
-            
-            VStack(alignment: .leading, spacing: 4) {
+
+            VStack(alignment: .leading, spacing: 6) {
                 Text(task.title)
                     .strikethrough(task.isDone)
                     .foregroundStyle(task.isDone ? .white.opacity(0.6) : .white)
-                
-                Text("Priority: \(task.priority.title)")
+
+                //what the app is actually using
+                Text("Priority: \(task.effectivePriority.title)")
                     .font(.caption)
                     .foregroundStyle(.white.opacity(0.75))
+
+                // WHY: if the user manually overrides priority, the auto guess is just noise
+                // HOW: only show auto guess when override is nil
+                if task.userPriorityOverride == nil {
+                    let pct = Int((task.priorityConfidence * 100).rounded())
+                    Text("Auto: \(task.predictedPriority.title) (\(pct)%)")
+                        .font(.caption2)
+                        .foregroundStyle(.white.opacity(0.6))
+                }
+
+
+                //MARK: - priority picker
+                //WHY: user can override, or return to Auto
+                //HOW: Auto is nil, other options are Priority values
+                Picker("Priority", selection: $selectedOverride) {
+                    Text("Auto").tag(Priority?.none)
+                    ForEach(Priority.allCases) { p in
+                        Text(p.title).tag(Optional(p))
+                    }
+                }
+                .pickerStyle(.menu)
+                .tint(theme.focusColor)
+                .onChange(of: selectedOverride) { _, newValue in
+                    onSetPriorityOverride(newValue)
+                }
             }
+            Spacer()
+            //MARK: - play button
             
+            if !task.isDone {
+                NavigationLink {
+                    TaskPomodoroView(task: task, theme: theme)
+                } label: {
+                    Image(systemName: "play.circle.fill")
+                        .font(.title2)
+                        .foregroundStyle(theme.focusColor)
+                }
+                .buttonStyle(.plain)
+            }
         }
     }
 }

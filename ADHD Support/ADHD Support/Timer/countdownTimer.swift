@@ -10,12 +10,24 @@
 import SwiftUI
 
 struct countdownTimer: View {
+    
+    private let initialFocusMinutes: Int
+    private let initialBreakMinutes: Int
+    
+    //MARK: - recomendation
+    
+    private let recommendedFocusMinutes: Int?
+    private let recommendedBreakMinutes: Int?
+    private let recommendedLabel: String?
+    
+    
+    
 
     let theme: AppTheme
 
     @State private var timerActive = false
-    @State private var focusMinutes: Int = 25
-    @State private var breakMinutes: Int = 5
+    @State private var focusMinutes: Int
+    @State private var breakMinutes: Int
     @State private var sessionType: SessionType = .focusTime
     @State private var isPressed = false
     @State private var localMute: Bool = false
@@ -24,6 +36,29 @@ struct countdownTimer: View {
     @AppStorage("soundOnSessionEnd") private var soundOnSessionEnd: Bool = true
     @AppStorage("autoStartNextSession") private var autoStartNextSession: Bool = false
     @AppStorage("AmbientEnabled") private var ambientEnabled: Bool = true
+    
+    
+    init(
+        theme: AppTheme,
+        initialFocusMinutes: Int = 25,
+        initialBreakMinutes: Int = 5,
+        recommendedFocusMinutes: Int? = nil,
+        recommendedBreakMinutes: Int? = nil,
+        recommendedLabel: String? = nil
+    ) {
+        self.theme = theme
+        
+        self.initialFocusMinutes = initialFocusMinutes
+        self.initialBreakMinutes = initialBreakMinutes
+        
+        self.recommendedFocusMinutes = recommendedFocusMinutes
+        self.recommendedBreakMinutes = recommendedBreakMinutes
+        self.recommendedLabel = recommendedLabel
+        
+        _focusMinutes = State(initialValue: initialFocusMinutes)
+        _breakMinutes = State(initialValue: initialBreakMinutes)
+        _timeRemaining = State(initialValue: initialFocusMinutes * 60)
+    }
 
     enum SessionType {
         case focusTime
@@ -59,7 +94,7 @@ struct countdownTimer: View {
     }
 
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    @State var timeRemaining: Int = 25 * 60
+    @State var timeRemaining: Int
 
     var body: some View {
         VStack(spacing: 24) {
@@ -132,6 +167,38 @@ struct countdownTimer: View {
                         .foregroundStyle(theme.focusColor)
                 }
             }
+            
+            // MARK: - RECOMMENDATION UI
+            
+            if let recFocus = recommendedFocusMinutes,
+               let recBreak = recommendedBreakMinutes {
+                
+                
+                VStack(spacing: 6) {
+                    let labelText = recommendedLabel ?? "Recommended"
+                    Text("\(labelText): \(recFocus)m focus / \(recBreak)m break")
+                        .font(.caption)
+                        .foregroundStyle(.white.opacity(0.75))
+                    
+                    Button {
+                        focusMinutes = recFocus
+                        breakMinutes = recBreak
+                        sessionType = .focusTime
+                        timeRemaining = recFocus * 60
+                    } label: {
+                        Text("Apply Recommended") //turn to image later
+                            .font(.caption)
+                            .padding(.vertical, 6)
+                            .padding(.horizontal, 10)
+                            .background(.white.opacity(0.12))
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                    }
+                    .buttonStyle(.plain)
+                    .disabled(timerActive)
+                    .opacity(timerActive ? 0.5 : 1.0)
+                }
+                .padding(.bottom, 8)
+            }
 
             VStack(spacing: 16) {
                 VStack {
@@ -170,6 +237,7 @@ struct countdownTimer: View {
                 }
             }
         }
+            
         .padding()
         .onAppear {
             applyAmbience(for: theme)

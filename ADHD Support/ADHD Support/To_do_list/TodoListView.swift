@@ -2,8 +2,6 @@
 //  TodoListView.swift
 //  ADHD Support
 //
-//  Created by Peter McMichael on 2/3/26.
-//
 
 import SwiftUI
 
@@ -13,7 +11,10 @@ struct TodoListView: View {
     
     
     @State private var draftTitle: String = ""
-    @State private var chosenPriority: Priority = .medium
+
+    //nil means "Auto" (use ML predicted priority)
+    @State private var chosenPriorityOverride: Priority? = nil
+
     
     var body: some View {
         ZStack {
@@ -28,17 +29,26 @@ struct TodoListView: View {
                             .foregroundStyle(theme.focusColor)
                         HStack(spacing: 12) {
                             Menu {
+                                //Auto mode
+                                Button {
+                                    chosenPriorityOverride = nil
+                                } label: {
+                                    Text("Auto")
+                                }
+
+                                Divider()
+
+                                //Manual override mode
                                 ForEach(Priority.allCases) { p in
                                     Button {
-                                        chosenPriority = p
-                                    } label : {
+                                        chosenPriorityOverride = p
+                                    } label: {
                                         Text(p.title)
                                     }
                                 }
                             } label: {
-                                Label(chosenPriority.title, systemImage: "flag.fill")
+                                Label(chosenPriorityOverride?.title ?? "Auto", systemImage: "flag.fill")
                             }
-                            
                             Button { addTask() } label: {
                                 Label("Add", systemImage: "plus.circle.fill")
                             }
@@ -58,9 +68,14 @@ struct TodoListView: View {
                             .foregroundStyle(.white)
                     ) {
                         ForEach(section.tasks) { task in
-                            TodoRow(task: task, theme: theme) {
-                                store.toggleDone(for: task)
-                            }
+                            TodoRow(
+                                task: task,
+                                theme: theme,
+                                onToggle: { store.toggleDone(for: task) },
+                                onSetPriorityOverride: { newOverride in
+                                    store.setUserPriorityOverride(newOverride, for: task)
+                                }
+                            )
                             .listRowBackground(Color.clear)
                             .listRowSeparator(.hidden)
                         }
@@ -86,17 +101,20 @@ struct TodoListView: View {
             }
         }
     }
+    
     private func addTask() {
         let cleanTitle = draftTitle.trimmed
         guard !cleanTitle.isEmpty else { return }
-        
-        let priorityPrediction = PrioritiesClassifier.shared.predictPriority(for: cleanTitle)
-        let finalPriority: Priority = Priority(rawValue: priorityPrediction.label) ?? chosenPriority
-        store.addTask(title: cleanTitle, priority: finalPriority)
-        
+
+        //WHY: we do not decide final priority here
+        //HOW: we pass the optional user override into storage
+        //storage will always save the ML prediction too
+        store.addTask(title: cleanTitle, userPriorityOverride: chosenPriorityOverride)
+
         draftTitle = ""
-        chosenPriority = .medium
+        chosenPriorityOverride = nil
     }
+
    
 }
 private extension String {

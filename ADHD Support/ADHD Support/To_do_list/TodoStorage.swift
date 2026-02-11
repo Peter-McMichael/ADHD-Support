@@ -37,23 +37,27 @@ final class TodoStorage: ObservableObject {
 
 
     //MARK: - actions
-    func addTask(title: String, priority: Priority) {
+    func addTask(title: String, userPriorityOverride: Priority? = nil) {
         //clean up the text so "   " does not become a fake task
         let cleanTitle = title.trimmed
         guard !cleanTitle.isEmpty else { return }
 
 
         //ask the ml model what category this task probably belongs to
-        let prediction = TaskClassifier.shared.predictCategory(for: cleanTitle)
-        let category = PrioritiesClassifier.shared.predictPriority(for: cleanTitle)
+        let categoryPrediction = TaskClassifier.shared.predictCategory(for: cleanTitle)
+        
+        let priorityPrediction = PrioritiesClassifier.shared.predictPriority(for: cleanTitle)
+        let predicted = Priority(rawValue: priorityPrediction.label) ?? .medium
 
 
         //build the new task object we will store
         let newTask = TodoItem(
             title: cleanTitle,
-            priority: priority,
-            categoryLabel: prediction.label,
-            categoryConfidence: prediction.confidence
+            predictedPriority: predicted,
+            priorityConfidence: priorityPrediction.confidence,
+            categoryLabel: categoryPrediction.label,
+            categoryConfidence: categoryPrediction.confidence,
+            userPriorityOverride: userPriorityOverride
         )
 
 
@@ -61,7 +65,11 @@ final class TodoStorage: ObservableObject {
         tasks.insert(newTask, at: 0)
         //save happens automatically because tasks changed
     }
-
+    
+    func setUserPriorityOverride(_ override: Priority?, for task: TodoItem) {
+        guard let index = tasks.firstIndex(where: { $0.id == task.id}) else { return }
+        tasks[index].userPriorityOverride = override
+    }
 
     func toggleDone(for task: TodoItem) {
         //find the task in our main array (by id) and flip done/not done
@@ -120,8 +128,8 @@ final class TodoStorage: ObservableObject {
 
 
             //higher priority first
-            if a.priority.sortRank != b.priority.sortRank {
-                return a.priority.sortRank < b.priority.sortRank
+            if a.effectivePriority.sortRank != b.effectivePriority.sortRank {
+                return a.effectivePriority.sortRank < b.effectivePriority.sortRank
             }
 
 
