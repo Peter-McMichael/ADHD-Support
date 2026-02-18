@@ -24,6 +24,7 @@ struct ADHD_SupportApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(todoStorage)
         }
     }
 }

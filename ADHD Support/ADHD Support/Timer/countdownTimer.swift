@@ -260,13 +260,13 @@ struct countdownTimer: View {
                 }
             }
         }
-        .onChange(of: focusMinutes) { updateFocus in
+        .onChange(of: focusMinutes) {_, newValue in
             guard !timerActive, sessionType == .focusTime else { return }
-            timeRemaining = updateFocus * 60
+            timeRemaining = newValue * 60
         }
-        .onChange(of: breakMinutes) { updateBreak in
+        .onChange(of: breakMinutes) {_, newValue in
             guard !timerActive, sessionType == .breakTime else { return }
-            timeRemaining = updateBreak * 60
+            timeRemaining = newValue * 60
         }
     }
 

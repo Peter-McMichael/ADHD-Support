@@ -45,7 +45,7 @@ final class PrioritiesClassifier {
             let confidence = result.bestConfidence()
             
             
-            return Prediction(label: result.label, confidence: confidence)
+            return Prediction(label: result.label.lowercased(), confidence: confidence)
             
             
         } catch {
