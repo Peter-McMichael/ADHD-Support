@@ -42,7 +42,18 @@ enum AppTheme: String, CaseIterable, Identifiable, Equatable {
                return Color.black
            }
        }
+    
+    var controlTint: Color {
+        return .orange
+    }
 
+    var iconColor: Color {
+        return .pink
+    }
+    
+    var textPrimary: Color {
+        return .yellow
+    }
     
     var background: AnyView {
             switch self {

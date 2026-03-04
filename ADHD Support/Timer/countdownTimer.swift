@@ -203,19 +203,28 @@ struct countdownTimer: View {
             VStack(spacing: 16) {
                 VStack {
                     Text("Focus (min)")
+                        .foregroundStyle(theme.textPrimary)
                     Stepper(value: $focusMinutes, in: 1...60, step: 1) {
                         Text("\(focusMinutes)")
+                            .foregroundStyle(theme.textPrimary)
                     }
+
                     .disabled(timerActive)
+                    .background(Color.orange)
+                  
                 }
 
                 VStack {
                     Text("Break (min)")
+                        .foregroundStyle(theme.textPrimary)
                     Stepper(value: $breakMinutes, in: 1...10, step: 1) {
                         Text("\(breakMinutes)")
+                            .foregroundStyle(theme.textPrimary)
                     }
                     .disabled(timerActive)
+                    .background(Color.orange)
                 }
+               
                 
                 if ambientEnabled, theme.ambientSound != nil {
                     VStack {

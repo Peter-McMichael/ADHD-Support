@@ -17,6 +17,7 @@ struct ContentView: View {
                         ToolbarItem(placement: .topBarTrailing) {
                             Button { showSettings = true } label: {
                                 Image(systemName: "gearshape")
+                                    .foregroundStyle(theme.iconColor)
                             }
                         }
                     }
@@ -64,6 +65,7 @@ private struct TimerTab: View {
 //                        .foregroundStyle(.white)
 //                        .padding(12)
 //                        .background(.white.opacity(0.14))
+                        .foregroundStyle(theme.iconColor)
                 }
                 .padding(.trailing, 18)
                 .padding(.top, geo.safeAreaInsets.top + 10)
