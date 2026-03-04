@@ -19,6 +19,15 @@ struct ADHD_SupportApp: App {
         navBar.standardAppearance = appearance
         navBar.scrollEdgeAppearance = appearance
         navBar.compactAppearance = appearance
+        
+        let tabAppearance = UITabBarAppearance()
+        tabAppearance.configureWithTransparentBackground()
+        tabAppearance.backgroundColor = .clear
+        tabAppearance.shadowColor = .clear
+        
+        let tabBar = UITabBar.appearance()
+        tabBar.standardAppearance = tabAppearance
+        tabBar.scrollEdgeAppearance = tabAppearance
     }
     
     var body: some Scene {

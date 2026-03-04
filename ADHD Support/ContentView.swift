@@ -8,6 +8,7 @@ struct ContentView: View {
 
     var body: some View {
         TabView {
+            
             NavigationStack {
                 TodoListView(theme: theme)
                     .navigationTitle("To Do")
@@ -59,10 +60,10 @@ private struct TimerTab: View {
 
                 Button { showSettings = true } label: {
                     Image(systemName: "gearshape")
-                        .font(.system(size: 18, weight: .semibold))
-                        .foregroundStyle(.white)
-                        .padding(12)
-                        .background(.white.opacity(0.14))
+//                        .font(.system(size: 18, weight: .semibold))
+//                        .foregroundStyle(.white)
+//                        .padding(12)
+//                        .background(.white.opacity(0.14))
                 }
                 .padding(.trailing, 18)
                 .padding(.top, geo.safeAreaInsets.top + 10)
