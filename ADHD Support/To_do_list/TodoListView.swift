@@ -10,6 +10,10 @@ import SwiftUI
 
 struct TodoListView: View {
    @EnvironmentObject private var store: TodoStorage
+    
+    
+    @EnvironmentObject private var achievementStore: AchievementStore
+    
    let theme: AppTheme
    @State private var draftTitle: String = ""
    @State private var chosenPriorityOverride: Priority? = nil
@@ -30,7 +34,7 @@ struct TodoListView: View {
                            TodoRow(
                                task: task,
                                theme: theme,
-                               onToggle: { store.toggleDone(for: task) },
+                               onToggle: { store.toggleDone(for: task, achievementStore: achievementStore) },
                                onSetPriorityOverride: { newOverride in
                                    store.setUserPriorityOverride(newOverride, for: task)
                                }

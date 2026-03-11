@@ -10,6 +10,7 @@ import SwiftUI
 @main
 struct ADHD_SupportApp: App {
     @StateObject private var todoStorage = TodoStorage()
+    @StateObject private var achievementStore = AchievementStore()
     init() {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithTransparentBackground()
@@ -34,6 +35,7 @@ struct ADHD_SupportApp: App {
         WindowGroup {
             ContentView()
                 .environmentObject(todoStorage)
+                .environmentObject(achievementStore)
         }
     }
 }

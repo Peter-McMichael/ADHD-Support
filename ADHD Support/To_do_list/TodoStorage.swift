@@ -71,11 +71,18 @@ final class TodoStorage: ObservableObject {
         tasks[index].userPriorityOverride = override
     }
 
-    func toggleDone(for task: TodoItem) {
+    func toggleDone(for task: TodoItem, achievementStore: AchievementStore? = nil) {
         //find the task in our main array (by id) and flip done/not done
         guard let index = tasks.firstIndex(where: { $0.id == task.id }) else { return }
+        
+        let wasDone = tasks[index].isDone
+        
         tasks[index].isDone.toggle()
         //save happens automatically because tasks changed
+        
+        if !wasDone && tasks[index].isDone {
+            achievementStore?.recordTaskCompleted()
+        }
     }
 
 
