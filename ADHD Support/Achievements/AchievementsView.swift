@@ -15,7 +15,9 @@ struct AchievementsView: View {
         ZStack {
             theme.background.ignoresSafeArea()
             List {
-                achievementRow(title: AchievementID.firstTaskCompleted.title, detail: AchievementID.firstTaskCompleted.detail, unlocked: achievementStore.isUnlocked(.firstTaskCompleted))
+                ForEach(AchievementID.allCases) { achievement in
+                    achievementRow(title: achievement.title, detail: achievement.detail, unlocked: achievementStore.isUnlocked(achievement))
+                }
             }
             .scrollContentBackground(.hidden)
             .listStyle(.plain)

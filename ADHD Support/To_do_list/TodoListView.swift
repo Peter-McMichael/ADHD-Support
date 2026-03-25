@@ -77,6 +77,7 @@ struct TodoListView: View {
                    text: $draftTitle,
                    prompt: Text("Add a task...").foregroundStyle(theme.focusColor)
                )
+               .font(.largeTitle)
                .onSubmit { addTask() }
                .submitLabel(.done)
                .foregroundStyle(theme.focusColor)
@@ -118,7 +119,7 @@ struct TodoListView: View {
        // WHY: we do not decide final priority here
        // HOW: we pass the optional user override into storage
        // storage will always save the ML prediction too
-       store.addTask(title: cleanTitle, userPriorityOverride: chosenPriorityOverride)
+       store.addTask(title: cleanTitle, userPriorityOverride: chosenPriorityOverride, achievementStore: achievementStore)
 
 
        draftTitle = ""

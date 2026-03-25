@@ -37,7 +37,7 @@ final class TodoStorage: ObservableObject {
 
 
     //MARK: - actions
-    func addTask(title: String, userPriorityOverride: Priority? = nil) {
+    func addTask(title: String, userPriorityOverride: Priority? = nil, achievementStore: AchievementStore? = nil) {
         //clean up the text so "   " does not become a fake task
         let cleanTitle = title.trimmed
         guard !cleanTitle.isEmpty else { return }
@@ -64,6 +64,8 @@ final class TodoStorage: ObservableObject {
         //new tasks go first so it feels instant
         tasks.insert(newTask, at: 0)
         //save happens automatically because tasks changed
+        
+        achievementStore?.recordTaskAdded()
     }
     
     func setUserPriorityOverride(_ override: Priority?, for task: TodoItem) {
@@ -81,7 +83,7 @@ final class TodoStorage: ObservableObject {
         //save happens automatically because tasks changed
         
         if !wasDone && tasks[index].isDone {
-            achievementStore?.recordTaskCompleted()
+            achievementStore?.recordTaskCompleted(task: tasks[index])
         }
     }
 

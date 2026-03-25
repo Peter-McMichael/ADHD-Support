@@ -7,8 +7,11 @@
 
 import Foundation
 
-enum AchievementID: String, Codable, Identifiable {
+enum AchievementID: String, Codable, Identifiable, CaseIterable {
     case firstTaskCompleted
+    case tenTasksCompleted
+    case firstUrgentTaskCompleted
+    case firstTaskAdded
     
     var id: String { rawValue }
     
@@ -16,6 +19,12 @@ enum AchievementID: String, Codable, Identifiable {
         switch self {
         case .firstTaskCompleted:
             return "First Win!"
+        case .tenTasksCompleted:
+            return "Momentum"
+        case .firstUrgentTaskCompleted:
+            return "Under Pressure"
+        case .firstTaskAdded:
+            return "Getting Started"
         }
     }
     
@@ -23,6 +32,12 @@ enum AchievementID: String, Codable, Identifiable {
         switch self {
         case .firstTaskCompleted:
             return "Complete 1 task"
+        case .tenTasksCompleted:
+            return "Complete 10 tasks"
+        case .firstUrgentTaskCompleted:
+            return "Complete 1 urgent task"
+        case .firstTaskAdded:
+            return "Add 1 task"
         }
     }
 }

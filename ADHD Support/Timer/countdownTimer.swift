@@ -149,6 +149,10 @@ struct countdownTimer: View {
                     startOrPause()
                 })
             
+            
+            
+            
+            
           
     
                 
@@ -200,31 +204,21 @@ struct countdownTimer: View {
                 .padding(.bottom, 8)
             }
 
+            
+            
+            
             VStack(spacing: 16) {
-                VStack {
-                    Text("Focus (min)")
-                        .foregroundStyle(theme.textPrimary)
-                    Stepper(value: $focusMinutes, in: 1...60, step: 1) {
-                        Text("\(focusMinutes)")
-                            .foregroundStyle(theme.textPrimary)
-                    }
-
-                    .disabled(timerActive)
-                    .background(Color.orange)
-                  
-                }
-
-                VStack {
-                    Text("Break (min)")
-                        .foregroundStyle(theme.textPrimary)
-                    Stepper(value: $breakMinutes, in: 1...10, step: 1) {
-                        Text("\(breakMinutes)")
-                            .foregroundStyle(theme.textPrimary)
-                    }
-                    .disabled(timerActive)
-                    .background(Color.orange)
-                }
-               
+                timerAdjuster(
+                    title: "Focus (min)",
+                    value: $focusMinutes,
+                    range: 1...60
+                )
+                
+                timerAdjuster(
+                    title: "Break (min)",
+                    value: $breakMinutes,
+                    range: 1...60
+                )
                 
                 if ambientEnabled, theme.ambientSound != nil {
                     VStack {
@@ -326,5 +320,61 @@ struct countdownTimer: View {
         
     }
     
+    @ViewBuilder
+    private func timerAdjuster(
+        title: String,
+        value: Binding<Int>,
+        range: ClosedRange<Int>
+    ) -> some View {
+        VStack(spacing: 8) {
+            Text(title)
+                .foregroundStyle(theme.focusColor)
+            HStack(spacing: 16) {
+                Text("\(value.wrappedValue)")
+                    .foregroundStyle(theme.focusColor)
+                    .frame(minWidth: 40, alignment: .leading)
+                
+                Spacer()
+                
+                Button {
+                    if value.wrappedValue > range.lowerBound {
+                        value.wrappedValue -= 1
+                    }
+                } label: {
+                    Image(systemName: "minus")
+                        .font(.title3.bold())
+                        .foregroundStyle(
+                            timerActive
+                            ? theme.textPrimary : theme.controlTint
+                        )
+                        .frame(width:44, height: 44)
+                }
+                .buttonStyle(.plain)
+                .disabled(timerActive)
+                
+                Button {
+                    if value.wrappedValue < range.upperBound {
+                        value.wrappedValue += 1
+                    }
+                } label: {
+                    Image(systemName: "plus")
+                        .font(.title3.bold())
+                        .foregroundStyle(
+                            timerActive
+                            ? theme.textPrimary : theme.controlTint
+                        )
+                        .frame(width:44, height: 44)
+                }
+                .buttonStyle(.plain)
+                .disabled(timerActive)
+                }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(theme.background)
+            .clipShape(RoundedRectangle(cornerRadius: 14))
+            }
+        }
+    }
         
-}
+
+
