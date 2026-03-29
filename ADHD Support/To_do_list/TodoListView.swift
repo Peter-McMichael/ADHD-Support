@@ -75,12 +75,12 @@ struct TodoListView: View {
                TextField(
                    "",
                    text: $draftTitle,
-                   prompt: Text("Add a task...").foregroundStyle(theme.focusColor)
+                   prompt: Text("Add a task...").foregroundStyle(.white)
                )
                .font(.largeTitle)
                .onSubmit { addTask() }
                .submitLabel(.done)
-               .foregroundStyle(theme.focusColor)
+               .foregroundStyle(.white)
 
 
                HStack(spacing: 12) {
@@ -95,10 +95,12 @@ struct TodoListView: View {
                    } label: {
                        Label(chosenPriorityOverride?.title ?? "Auto", systemImage: "flag.fill")
                    }
+                   .foregroundColor(.white)
 
 
                    Button { addTask() } label: {
                        Label("Add", systemImage: "plus.circle.fill")
+                           .foregroundColor(.white)
                    }
                }
            }

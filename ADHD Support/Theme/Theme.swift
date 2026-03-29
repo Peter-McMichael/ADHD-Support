@@ -31,7 +31,7 @@ enum AppTheme: String, CaseIterable, Identifiable, Equatable {
     var chromeColor: Color {
            switch self {
            case .classic:
-               return Color(red: 11/255, green: 90/255, blue: 133/255)
+               return Color(red: 0/255, green: 160/255, blue: 207/255)
            case .rain:
                return Color(red: 8/255, green: 18/255, blue: 32/255)
            case .field:
@@ -44,11 +44,11 @@ enum AppTheme: String, CaseIterable, Identifiable, Equatable {
        }
     
     var controlTint: Color {
-        return .orange
+        return .white
     }
 
     var iconColor: Color {
-        return .pink
+        return .white
     }
     
     var textPrimary: Color {
@@ -60,7 +60,7 @@ enum AppTheme: String, CaseIterable, Identifiable, Equatable {
             case .classic:
                 return AnyView(
                     LinearGradient(
-                        colors: [Color(red: 11/255, green: 90/255, blue: 133/255)],
+                        colors: [Color(red: 0/255, green: 160/255, blue: 207/255)],
                         startPoint: .top,
                         endPoint: .bottom
                     )
