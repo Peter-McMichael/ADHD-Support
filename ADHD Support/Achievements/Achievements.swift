@@ -40,6 +40,19 @@ enum AchievementID: String, Codable, Identifiable, CaseIterable {
             return "Add 1 task"
         }
     }
+    
+    var targetCount: Int {
+        switch self {
+        case .firstTaskCompleted:
+            return 1
+        case .tenTasksCompleted:
+            return 10
+        case .firstUrgentTaskCompleted:
+            return 1
+        case .firstTaskAdded:
+            return 1
+        }
+    }
 }
 
 

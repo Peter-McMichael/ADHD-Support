@@ -53,6 +53,7 @@ final class AchievementStore: ObservableObject {
     func recordTaskAdded() {
         tasksAddedCount += 1
         saveCounters()
+        objectWillChange.send()
         
         if tasksAddedCount >= 1 {
             unlock(.firstTaskAdded)
@@ -62,6 +63,7 @@ final class AchievementStore: ObservableObject {
     func recordTaskCompleted(task: TodoItem) {
         tasksCompletedCount += 1
         saveCounters()
+        objectWillChange.send()
         
         if tasksCompletedCount >= 1 {
             unlock(.firstTaskCompleted)
@@ -152,8 +154,31 @@ final class AchievementStore: ObservableObject {
         }
     }
     
+    func currentCount(for id: AchievementID) -> Int {
+        switch id {
+        case .firstTaskCompleted:
+            return min(tasksCompletedCount, id.targetCount)
+        case .tenTasksCompleted:
+            return min(tasksCompletedCount, id.targetCount)
+        case .firstUrgentTaskCompleted:
+            return min(tasksCompletedCount, id.targetCount)
+        case .firstTaskAdded:
+            return min(tasksCompletedCount, id.targetCount)
+            
+        }
+    }
+    
+    func progressFraction(for id: AchievementID) -> Double {
+        let current = currentCount(for: id)
+        let target = id.targetCount
+        
+        return Double(current)/Double(target)
+    }
     
     
+    func progressText(for id: AchievementID) -> String {
+        "\(currentCount(for: id)) / \(id.targetCount)"
+    }
     
     
     

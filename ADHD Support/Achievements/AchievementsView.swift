@@ -16,7 +16,7 @@ struct AchievementsView: View {
             theme.background.ignoresSafeArea()
             List {
                 ForEach(AchievementID.allCases) { achievement in
-                    achievementRow(title: achievement.title, detail: achievement.detail, unlocked: achievementStore.isUnlocked(achievement))
+                    achievementRow(for: achievement)
                 }
             }
             .scrollContentBackground(.hidden)
@@ -26,10 +26,13 @@ struct AchievementsView: View {
     }
     
     @ViewBuilder
-    private func achievementRow(title: String, detail: String, unlocked: Bool) -> some View {
+    private func achievementRow(for achievement: AchievementID) -> some View {
+        let unlocked = achievementStore.isUnlocked(achievement)
+        let progressText = achievementStore.progressText(for: achievement)
+        let progressFraction = achievementStore.progressFraction(for: achievement)
         VStack(alignment: .leading, spacing: 6) {
             HStack {
-                Text(title)
+                Text(achievement.title)
                     .font(.headline)
                     .foregroundStyle(.white)
                 
@@ -39,11 +42,36 @@ struct AchievementsView: View {
                     .foregroundStyle(unlocked ? theme.focusColor : .white.opacity(0.55))
             }
             
-            Text(detail)
+            Text(achievement.detail)
                 .font(.subheadline)
                 .foregroundStyle(.white.opacity(0.8))
+            
+            HStack(spacing: 10) {
+                GeometryReader { geo in
+                    ZStack(alignment: .leading) {
+                        Capsule()
+                            .fill(Color.white.opacity(0.16))
+                        Capsule()
+                            .fill(theme.focusColor)
+                            .frame(width: geo.size.width * progressFraction)
+                    }
+                }
+                .frame(height: 8)
+                
+                Text(progressText)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(theme.chromeColor)
+                    .monospacedDigit()
+            }
         }
-        .padding(.vertical, 0)
+        .padding(14)
+        .background(.white.opacity(0.05))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .overlay {
+            RoundedRectangle(cornerRadius: 16)
+                .stroke(theme.focusColor.opacity(unlocked ? 0.35 : 0.15), lineWidth: 1)
+        }
+        .padding(.vertical, 6)
         .listRowBackground(Color.clear)
         .listRowSeparator(.hidden)
     }

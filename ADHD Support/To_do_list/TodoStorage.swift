@@ -14,15 +14,19 @@ import Combine
 @MainActor
 final class TodoStorage: ObservableObject {
 
+//    struct TodoSection: Identifiable {
+//        let id: TodoCategory
+//        let title: String
+//        let tasks: [TodoItem]
+//    }
 
     //MARK: - properties
-    @Published var tasks: [TodoItem] = [] {
-        didSet {
-            //any time tasks changes (add/toggle/delete), we save automatically
-            //this is simple and keeps the app from forgetting stuff
-            saveTasks()
-        }
-    }
+    @Published var tasks: [TodoItem] = []
+    
+    @Published private(set) var cachedSections: [TodoSection] = []
+    
+    
+        
 
 
     //this is the key name we use in userdefaults
@@ -33,6 +37,8 @@ final class TodoStorage: ObservableObject {
     init() {
         //load saved tasks when the app starts
         loadTasks()
+        
+        rebuildSections()
     }
 
 
@@ -66,11 +72,15 @@ final class TodoStorage: ObservableObject {
         //save happens automatically because tasks changed
         
         achievementStore?.recordTaskAdded()
+        
+        commitChanges()
     }
     
     func setUserPriorityOverride(_ override: Priority?, for task: TodoItem) {
         guard let index = tasks.firstIndex(where: { $0.id == task.id}) else { return }
         tasks[index].userPriorityOverride = override
+        
+        commitChanges()
     }
 
     func toggleDone(for task: TodoItem, achievementStore: AchievementStore? = nil) {
@@ -85,15 +95,31 @@ final class TodoStorage: ObservableObject {
         if !wasDone && tasks[index].isDone {
             achievementStore?.recordTaskCompleted(task: tasks[index])
         }
+        
+        commitChanges()
     }
 
 
+    func markDone(for task: TodoItem, achievementStore: AchievementStore? = nil) {
+        guard let index = tasks.firstIndex(where: { $0.id == task.id }) else { return }
+        guard !tasks[index].isDone else { return }
+        
+        tasks [index].isDone = true
+                
+        achievementStore?.recordTaskCompleted(task: tasks[index])
+        
+        commitChanges()
+    }
+    
+    
     func deleteTasks(at offsets: IndexSet, in sectionTasks: [TodoItem]) {
         //the list gives us offsets for the section array, not the main tasks array
         //so we delete by id to avoid deleting the wrong thing
         let idsToDelete = offsets.map { sectionTasks[$0].id }
         tasks.removeAll { idsToDelete.contains($0.id) }
         //save happens automatically because tasks changed
+        
+        commitChanges()
     }
 
 
@@ -108,23 +134,24 @@ final class TodoStorage: ObservableObject {
 
 
     var sections: [TodoSection] {
-        //group tasks into buckets based on their category
-        //dictionary looks like: category -> [tasks in that category]
-        let grouped = Dictionary(grouping: tasks) { $0.category }
-
-
-        //we return sections in a fixed order so the ui does not jump around
-        return TodoCategory.displayOrder.compactMap { category in
-            //skip empty categories so we only show headings that actually have tasks
-            guard let categoryTasks = grouped[category], !categoryTasks.isEmpty else { return nil }
-
-
-            return TodoSection(
-                id: category,
-                title: category.displayTitle,
-                tasks: sortForDisplay(categoryTasks)
-            )
-        }
+//        //group tasks into buckets based on their category
+//        //dictionary looks like: category -> [tasks in that category]
+//        let grouped = Dictionary(grouping: tasks) { $0.category }
+//
+//
+//        //we return sections in a fixed order so the ui does not jump around
+//        return TodoCategory.displayOrder.compactMap { category in
+//            //skip empty categories so we only show headings that actually have tasks
+//            guard let categoryTasks = grouped[category], !categoryTasks.isEmpty else { return nil }
+//
+//
+//            return TodoSection(
+//                id: category,
+//                title: category.displayTitle,
+//                tasks: sortForDisplay(categoryTasks)
+//            )
+//        }
+        cachedSections
     }
 
 
@@ -145,6 +172,24 @@ final class TodoStorage: ObservableObject {
             //newer first
             return a.createdAt > b.createdAt
         }
+    }
+    
+    private func rebuildSections() {
+        let grouped = Dictionary(grouping: tasks) { $0.category }
+        
+        
+                //we return sections in a fixed order so the ui does not jump around
+        cachedSections = TodoCategory.displayOrder.compactMap { category in
+                    //skip empty categories so we only show headings that actually have tasks
+                    guard let categoryTasks = grouped[category], !categoryTasks.isEmpty else { return nil }
+        
+        
+                    return TodoSection(
+                        id: category,
+                        title: category.displayTitle,
+                        tasks: sortForDisplay(categoryTasks)
+                    )
+                }
     }
 
 
@@ -174,8 +219,15 @@ final class TodoStorage: ObservableObject {
         }
     }
     
+    private func commitChanges() {
+        rebuildSections()
+        saveTasks()
+    }
+    
     func clearCompleted() {
         tasks.removeAll { $0.isDone }
+        
+        commitChanges()
     }
 }
 
