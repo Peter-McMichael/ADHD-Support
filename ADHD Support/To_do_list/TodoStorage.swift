@@ -13,21 +13,11 @@ import Combine
 
 @MainActor
 final class TodoStorage: ObservableObject {
+    // MARK: - Properties
 
-//    struct TodoSection: Identifiable {
-//        let id: TodoCategory
-//        let title: String
-//        let tasks: [TodoItem]
-//    }
+    @Published private(set) var sections: [TodoSection] = []
 
-    //MARK: - properties
-    @Published var tasks: [TodoItem] = []
-    
-    @Published private(set) var cachedSections: [TodoSection] = []
-    
-    
-        
-
+    private var tasks: [TodoItem] = []
 
     //this is the key name we use in userdefaults
     private let storageKey = "todoItemsJSON"
@@ -37,7 +27,7 @@ final class TodoStorage: ObservableObject {
     init() {
         //load saved tasks when the app starts
         loadTasks()
-        
+
         rebuildSections()
     }
 
@@ -126,32 +116,10 @@ final class TodoStorage: ObservableObject {
 
 
     //MARK: - sections for ui
-    struct TodoSection: Identifiable {
+    struct TodoSection: Identifiable, Equatable {
         let id: TodoCategory
         let title: String
         let tasks: [TodoItem]
-    }
-
-
-    var sections: [TodoSection] {
-//        //group tasks into buckets based on their category
-//        //dictionary looks like: category -> [tasks in that category]
-//        let grouped = Dictionary(grouping: tasks) { $0.category }
-//
-//
-//        //we return sections in a fixed order so the ui does not jump around
-//        return TodoCategory.displayOrder.compactMap { category in
-//            //skip empty categories so we only show headings that actually have tasks
-//            guard let categoryTasks = grouped[category], !categoryTasks.isEmpty else { return nil }
-//
-//
-//            return TodoSection(
-//                id: category,
-//                title: category.displayTitle,
-//                tasks: sortForDisplay(categoryTasks)
-//            )
-//        }
-        cachedSections
     }
 
 
@@ -176,20 +144,18 @@ final class TodoStorage: ObservableObject {
     
     private func rebuildSections() {
         let grouped = Dictionary(grouping: tasks) { $0.category }
-        
-        
-                //we return sections in a fixed order so the ui does not jump around
-        cachedSections = TodoCategory.displayOrder.compactMap { category in
-                    //skip empty categories so we only show headings that actually have tasks
-                    guard let categoryTasks = grouped[category], !categoryTasks.isEmpty else { return nil }
-        
-        
-                    return TodoSection(
-                        id: category,
-                        title: category.displayTitle,
-                        tasks: sortForDisplay(categoryTasks)
-                    )
-                }
+
+        // WHY: a stable section order which helps
+        // when a single task changes.
+        sections = TodoCategory.displayOrder.compactMap { category in
+            guard let categoryTasks = grouped[category], !categoryTasks.isEmpty else { return nil }
+
+            return TodoSection(
+                id: category,
+                title: category.displayTitle,
+                tasks: sortForDisplay(categoryTasks)
+            )
+        }
     }
 
 
@@ -239,7 +205,4 @@ private extension String {
         trimmingCharacters(in: .whitespacesAndNewlines)
     }
 }
-
-
-
 

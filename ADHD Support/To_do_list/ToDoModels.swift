@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum Priority: String, Codable, CaseIterable, Identifiable {
+enum Priority: String, Codable, CaseIterable, Identifiable, Equatable {
     case low
     case medium
     case high
@@ -125,7 +125,7 @@ enum TodoCategory: String, Codable, CaseIterable, Identifiable {
 }
 
 
-struct TodoItem: Identifiable, Codable {
+struct TodoItem: Identifiable, Codable, Equatable {
     let id: UUID
     var title: String
     var isDone: Bool

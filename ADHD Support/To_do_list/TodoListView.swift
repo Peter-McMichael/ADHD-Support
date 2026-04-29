@@ -1,147 +1,455 @@
-
 //
+////
+////  TodoListView.swift
+////  ADHD Support
+////
+//
+//
+//import SwiftUI
+//
+//
+//struct TodoListView: View {
+//   @EnvironmentObject private var store: TodoStorage
+//    
+//    
+//    @EnvironmentObject private var achievementStore: AchievementStore
+//    
+//   let theme: AppTheme
+//  
+//
+//
+//   var body: some View {
+//       ZStack {
+//           TodoBackground(theme: theme)
+//               .equatable()
+//           
+//           VStack(spacing: 0) {
+//               TodoComposer(theme: theme, onAddTask: addTask)
+//                   .padding(.horizontal, 16)
+//                   .padding(.top, 12)
+//                   .padding(.bottom, 4)
+//               
+//               TodoTaskList(
+//                sections: store.sections,
+//                theme: theme,
+//                onToggle: { task in
+//                    store.toggleDone(for: task, achievementStore: achievementStore)
+//                },
+//                onSetPriorityOverride: { task, newOverride in
+//                    store.setUserPriorityOverride(newOverride, for: task)
+//                },
+//                onDelete: { offsets, sectionTasks in
+//                    store.deleteTasks(at: offsets, in: sectionTasks)
+//                }
+//               )
+//               .equatable()
+//           }
+//       }
+//           .toolbar {
+//               ToolbarItem(placement: .topBarTrailing) {
+//                   Button { store.clearCompleted() } label: {
+//                       Image(systemName: "trash")
+//               }
+//           }
+//       }
+//   }
+//
+//
+//   // MARK: - Sections
+//
+//
+////   private var addTaskSection: some View {
+////       Section {
+////           VStack(alignment: .leading, spacing: 10) {
+//    //               TextField(
+//    //                   "",
+//    //                   text: $draftTitle,
+//    //                   prompt: Text("Add a task...").foregroundStyle(.white)
+//    //               )
+//    //               .font(.largeTitle)
+//    //               .onSubmit { addTask() }
+//    //               .submitLabel(.done)
+//    //               .foregroundStyle(.white)
+//    //
+//    //
+//    //               HStack(spacing: 12) {
+//    //                   Menu {
+//    //                       Button { chosenPriorityOverride = nil } label: { Text("Auto") }
+//    //                       Divider()
+//    //
+//    //
+//    //                       ForEach(Priority.allCases) { p in
+//    //                           Button { chosenPriorityOverride = p } label: { Text(p.title) }
+////                       }
+////                   } label: {
+////                       Label(chosenPriorityOverride?.title ?? "Auto", systemImage: "flag.fill")
+////                   }
+////                   .foregroundColor(.white)
+////
+////
+//////                   Button { addTask() } label: {
+////                       Label("Add", systemImage: "plus.circle.fill")
+////                           .foregroundColor(.white)
+////                   }
+////               }
+////           }
+////           .padding(.vertical, 6)
+////       }
+////       .clearSectionStyle()
+////   }
+//
+//
+//   // MARK: - Actions
+//
+//
+//    private func addTask(title: String, chosenPriorityOverride: Priority?) {
+//
+//
+//
+//       // WHY: we do not decide final priority here
+//       // HOW: we pass the optional user override into storage
+//       // storage will always save the ML prediction too
+//       store.addTask(title: title, userPriorityOverride: chosenPriorityOverride, achievementStore: achievementStore)
+//
+//
+//   }
+//}
+//
+//private struct TodoBackground: View, Equatable {
+//    let theme: AppTheme
+//    
+//    var body: some View {
+//        theme.background
+//    }
+//}
+//
+//private struct TodoComposer: View {
+//    let theme: AppTheme
+//    let onAddTask: (String, Priority?) -> Void
+//    
+//    @State private var draftTitle: String = ""
+//    @State private var chosenPriorityOverride: Priority? = nil
+//
+//
+//    var body: some View {
+//        VStack(alignment: .leading, spacing: 10) {
+//                TextField(
+//                    "",
+//                    text: $draftTitle,
+//                    prompt: Text("Add a task...").foregroundStyle(.white)
+//                )
+//                .font(.largeTitle)
+//                .onSubmit { submit() }
+//                .submitLabel(.done)
+//                .foregroundStyle(.white)
+// 
+// 
+//                HStack(spacing: 12) {
+//                    Menu {
+//                        Button { chosenPriorityOverride = nil } label: { Text("Auto") }
+//                        Divider()
+// 
+// 
+//                        ForEach(Priority.allCases) { p in
+//                            Button { chosenPriorityOverride = p } label: {
+//                                Text(p.title) }
+//                                                   }
+//                                               } label: {
+//                                                   Label(chosenPriorityOverride?.title ?? "Auto", systemImage: "flag.fill")
+//                                               }
+//                                               .foregroundColor(.white)
+//                            
+//                            
+//                    Button(action: submit) {
+//                                                   Label("Add", systemImage: "plus.circle.fill")
+//                                                       .foregroundColor(.white)
+//                    
+//                    
+//                                               }
+//                                           }
+//                                       }
+//                                       .padding(.vertical, 6)
+//    }
+//    private func submit() {
+//        let cleanTitle = draftTitle.trimmed
+//        guard !cleanTitle.isEmpty else { return }
+//        
+//        onAddTask(cleanTitle, chosenPriorityOverride)
+//        
+//        draftTitle = ""
+//        chosenPriorityOverride = nil
+//    }
+//}
+//
+//private struct TodoTaskList: View, Equatable {
+//    let sections: [TodoStorage.TodoSection]
+//    let theme: AppTheme
+//    let onToggle: (TodoItem) -> Void
+//    let onSetPriorityOverride: (TodoItem, Priority?) -> Void
+//    let onDelete: (IndexSet, [TodoItem]) -> Void
+//    
+//    static func == (lhs: TodoTaskList, rhs: TodoTaskList) -> Bool {
+//        lhs.sections == rhs.sections && lhs.theme == rhs.theme
+//    }
+//    
+//    
+//    var body: some View {
+//        List {
+//            ForEach(sections) { section in
+//                Section {
+//                    ForEach(section.tasks) { task in
+//                        TodoRow(task: task, theme: theme, onToggle: { onToggle(task)}, onSetPriorityOverride: { newOverride in onSetPriorityOverride(task, newOverride)
+//                        }
+//                        )
+//                        .equatable()
+//                        .clearRowStyle()
+//                    }
+//                    .onDelete { offsets in
+//                        onDelete(offsets, section.tasks)
+//                    } header: {
+//                        Text(section.title)
+//                            .font(.headline)
+//                            .foregroundStyle(.white)
+//                    }
+//                    .clearSectionStyle()
+//                    
+//                }
+//            }
+//            .scrollContentBackground(.hidden)
+//            .listStyle(.plain)
+//            .tint(theme.focusColor)
+//        }
+//    }
+//    
+//    // MARK: - Small helpers to avoid modifier spam
+//    
+//    
+//    private extension View {
+//        
+//        
+//        func clearRowStyle() -> some View {
+//            self
+//                .listRowBackground(Color.clear)
+//                .listRowSeparator(.hidden)
+//        }
+//        
+//        
+//        func clearSectionStyle() -> some View {
+//            self
+//                .listRowBackground(Color.clear)
+//                .listRowSeparator(.hidden)
+//        }
+//    }
+//    
+//    
+//    private extension String {
+//        var trimmed: String {
+//            trimmingCharacters(in: .whitespacesAndNewlines)
+//        }
+//    }
+//    
+//    
+//    
+//    
+//    
+//    
+//}
+
 //  TodoListView.swift
 //  ADHD Support
-//
 
 
 import SwiftUI
 
-
 struct TodoListView: View {
    @EnvironmentObject private var store: TodoStorage
-    
-    
-    @EnvironmentObject private var achievementStore: AchievementStore
-    
-   let theme: AppTheme
-   @State private var draftTitle: String = ""
-   @State private var chosenPriorityOverride: Priority? = nil
+   @EnvironmentObject private var achievementStore: AchievementStore
 
+   let theme: AppTheme
 
    var body: some View {
        ZStack {
-           theme.background.ignoresSafeArea()
+           //background is its own small view so SwiftUI can decide
+           //whether the background actually changed before rebuilding it (.equatable)
+           TodoBackground(theme: theme)
+               .equatable()
 
+           VStack(spacing: 0) {
+               //composer owns the typing state
+               //prevents every keystroke from refreshing the whole task list
+               TodoComposer(theme: theme, onAddTask: addTask)
+                   .padding(.horizontal, 16)
+                   .padding(.top, 12)
+                   .padding(.bottom, 4)
 
-           List {
-               addTaskSection
-
-
-               ForEach(store.sections) { section in
-                   Section {
-                       ForEach(section.tasks) { task in
-                           TodoRow(
-                               task: task,
-                               theme: theme,
-                               onToggle: { store.toggleDone(for: task, achievementStore: achievementStore) },
-                               onSetPriorityOverride: { newOverride in
-                                   store.setUserPriorityOverride(newOverride, for: task)
-                               }
-                           )
-                           .clearRowStyle()
-                       }
-                       .onDelete { offsets in
-                           store.deleteTasks(at: offsets, in: section.tasks)
-                       }
-                   } header: {
-                       Text(section.title)
-                           .font(.headline)
-                           .foregroundStyle(.white)
+               //list receives the finished task sections to display
+               TodoTaskList(
+                   sections: store.sections,
+                   theme: theme,
+                   onToggle: { task in
+                       store.toggleDone(for: task, achievementStore: achievementStore)
+                   },
+                   onSetPriorityOverride: { task, newOverride in
+                       store.setUserPriorityOverride(newOverride, for: task)
+                   },
+                   onDelete: { offsets, sectionTasks in
+                       store.deleteTasks(at: offsets, in: sectionTasks)
                    }
-                   .clearSectionStyle()
-               }
-           }
-           .scrollContentBackground(.hidden)
-           .listStyle(.plain)
-           .tint(theme.focusColor)
-           .toolbar {
-               ToolbarItem(placement: .topBarTrailing) {
-                   Button { store.clearCompleted() } label: {
-                       Image(systemName: "trash")
-                   }
-               }
-           }
-       }
-   }
-
-
-   // MARK: - Sections
-
-
-   private var addTaskSection: some View {
-       Section {
-           VStack(alignment: .leading, spacing: 10) {
-               TextField(
-                   "",
-                   text: $draftTitle,
-                   prompt: Text("Add a task...").foregroundStyle(.white)
                )
-               .font(.largeTitle)
-               .onSubmit { addTask() }
-               .submitLabel(.done)
-               .foregroundStyle(.white)
-
-
-               HStack(spacing: 12) {
-                   Menu {
-                       Button { chosenPriorityOverride = nil } label: { Text("Auto") }
-                       Divider()
-
-
-                       ForEach(Priority.allCases) { p in
-                           Button { chosenPriorityOverride = p } label: { Text(p.title) }
-                       }
-                   } label: {
-                       Label(chosenPriorityOverride?.title ?? "Auto", systemImage: "flag.fill")
-                   }
-                   .foregroundColor(.white)
-
-
-                   Button { addTask() } label: {
-                       Label("Add", systemImage: "plus.circle.fill")
-                           .foregroundColor(.white)
-                   }
+               .equatable()
+           }
+       }
+       .toolbar {
+           ToolbarItem(placement: .topBarTrailing) {
+               Button { store.clearCompleted() } label: {
+                   Image(systemName: "trash")
                }
            }
-           .padding(.vertical, 6)
        }
-       .clearSectionStyle()
    }
-
 
    // MARK: - Actions
+   private func addTask(title: String, chosenPriorityOverride: Priority?) {
+       store.addTask(
+           title: title,
+           userPriorityOverride: chosenPriorityOverride,
+           achievementStore: achievementStore
+       )
+   }
+}
 
 
-   private func addTask() {
+// MARK: - Background
+private struct TodoBackground: View, Equatable {
+   let theme: AppTheme
+
+   var body: some View {
+       theme.background
+   }
+}
+
+
+// MARK: - Composer
+private struct TodoComposer: View {
+   let theme: AppTheme
+   let onAddTask: (String, Priority?) -> Void
+
+   //these states stay here instead of in TodoListView
+   //so typing changes this view only not the whole screen
+   @State private var draftTitle = ""
+   @State private var chosenPriorityOverride: Priority? = nil
+
+   var body: some View {
+       VStack(alignment: .leading, spacing: 10) {
+           TextField(
+               "",
+               text: $draftTitle,
+               prompt: Text("Add a task...").foregroundStyle(.white)
+           )
+           .font(.largeTitle)
+           .onSubmit { submit() }
+           .submitLabel(.done)
+           .foregroundStyle(.white)
+
+           HStack(spacing: 12) {
+               Menu {
+                   Button { chosenPriorityOverride = nil } label: { Text("Auto") }
+                   Divider()
+
+                   ForEach(Priority.allCases) { priority in
+                       Button { chosenPriorityOverride = priority } label: {
+                           Text(priority.title)
+                       }
+                   }
+               } label: {
+                   Label(chosenPriorityOverride?.title ?? "Auto", systemImage: "flag.fill")
+               }
+               .foregroundColor(.white)
+
+               Button(action: submit) {
+                   Label("Add", systemImage: "plus.circle.fill")
+                       .foregroundColor(.white)
+               }
+           }
+       }
+       .padding(.vertical, 6)
+   }
+
+   private func submit() {
        let cleanTitle = draftTitle.trimmed
        guard !cleanTitle.isEmpty else { return }
 
+       //sends the finished task up to TodoListView.
+       onAddTask(cleanTitle, chosenPriorityOverride)
 
-       // WHY: we do not decide final priority here
-       // HOW: we pass the optional user override into storage
-       // storage will always save the ML prediction too
-       store.addTask(title: cleanTitle, userPriorityOverride: chosenPriorityOverride, achievementStore: achievementStore)
-
-
+       //clears the input after adding the task.
        draftTitle = ""
        chosenPriorityOverride = nil
    }
 }
 
 
-// MARK: - Small helpers to avoid modifier spam
+// MARK: - Task list
+private struct TodoTaskList: View, Equatable {
+   let sections: [TodoStorage.TodoSection]
+   let theme: AppTheme
+   let onToggle: (TodoItem) -> Void
+   let onSetPriorityOverride: (TodoItem, Priority?) -> Void
+   let onDelete: (IndexSet, [TodoItem]) -> Void
+
+   //this tells SwiftUI what counts as a real visual change for this view
+   //if task sections and theme are same -> list should look the same == no update
+   static func == (lhs: TodoTaskList, rhs: TodoTaskList) -> Bool {
+       lhs.sections == rhs.sections && lhs.theme == rhs.theme
+   }
+    // lhs = the old TodoTaskList
+    // rhs = the new TodoTaskList
+    //
+    // lhs.sections == rhs.sections checks whether the task data changed
+    // lhs.theme == rhs.theme checks whether the list styling changed
+
+   var body: some View {
+       List {
+           ForEach(sections) { section in
+               Section {
+                   ForEach(section.tasks) { task in
+                       TodoRow(
+                           task: task,
+                           theme: theme,
+                           onToggle: { onToggle(task) },
+                           onSetPriorityOverride: { newOverride in
+                               onSetPriorityOverride(task, newOverride)
+                           }
+                       )
+                       //SwiftUI can skip rebuilding this row if the row data did not change.
+                       .equatable()
+                       .clearRowStyle()
+                   }
+                   .onDelete { offsets in
+                       onDelete(offsets, section.tasks)
+                   }
+               } header: {
+                   Text(section.title)
+                       .font(.headline)
+                       .foregroundStyle(.white)
+               }
+               .clearSectionStyle()
+           }
+       }
+       .scrollContentBackground(.hidden)
+       .listStyle(.plain)
+       .tint(theme.focusColor)
+   }
+}
 
 
+// MARK: - Helpers
 private extension View {
-
-
    func clearRowStyle() -> some View {
        self
            .listRowBackground(Color.clear)
            .listRowSeparator(.hidden)
    }
-
 
    func clearSectionStyle() -> some View {
        self
@@ -150,15 +458,8 @@ private extension View {
    }
 }
 
-
 private extension String {
    var trimmed: String {
        trimmingCharacters(in: .whitespacesAndNewlines)
    }
 }
-
-
-
-
-
-

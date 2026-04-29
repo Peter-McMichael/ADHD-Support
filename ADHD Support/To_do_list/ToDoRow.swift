@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct TodoRow: View {
+struct TodoRow: View, Equatable {
     let task: TodoItem
     let theme: AppTheme
     let onToggle: () -> Void
@@ -13,6 +13,10 @@ struct TodoRow: View {
     //HOW: nil means Auto, otherwise it is the user override
     @State private var selectedOverride: Priority?
 
+    static func == (lhs: TodoRow, rhs: TodoRow) -> Bool {
+        lhs.task == rhs.task && lhs.theme == rhs.theme
+    }
+    
     init(
         task: TodoItem,
         theme: AppTheme,

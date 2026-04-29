@@ -55,21 +55,20 @@ enum AppTheme: String, CaseIterable, Identifiable, Equatable {
         return .yellow
     }
     
-    var background: AnyView {
+    @ViewBuilder
+    var background: some View {
             switch self {
             case .classic:
-                return AnyView(
                     LinearGradient(
                         colors: [Color(red: 0/255, green: 160/255, blue: 207/255)],
                         startPoint: .top,
                         endPoint: .bottom
                     )
                     .ignoresSafeArea()
-                )
+                
 
 
             case .rain:
-                return AnyView(
                     LinearGradient(
                         colors: [
                             Color(red: 8/255, green: 18/255, blue: 32/255),
@@ -79,26 +78,23 @@ enum AppTheme: String, CaseIterable, Identifiable, Equatable {
                         endPoint: .bottom
                     )
                     .ignoresSafeArea()
-                )
+                
 
 
 
             
         case .field:
-            return AnyView(
                 GrassyField()
                     .ignoresSafeArea()
-            )
+            
             case .underwater:
-                return AnyView(
                     UnderwaterWaveBackground()
                         .ignoresSafeArea()
-                )
+                
             case .space:
-                return AnyView(
                     Space_T()
                         .ignoresSafeArea()
-                )
+                
             
         }
     }
