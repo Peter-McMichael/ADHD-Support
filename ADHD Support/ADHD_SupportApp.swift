@@ -33,9 +33,49 @@ struct ADHD_SupportApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            SplashView()
                 .environmentObject(todoStorage)
                 .environmentObject(achievementStore)
+        }
+    }
+}
+
+
+private struct SplashLoadingView: View {
+    let progress: Double
+    
+    var body: some View {
+        VStack(spacing: 28) {
+            Image("splashscreen")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 180)
+            ProgressView(value: progress)
+                .progressViewStyle(.linear)
+                .frame(width: 220)
+                .tint(.cyan)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.white)
+    }
+}
+
+private struct SplashView: View {
+    @State private var isLoading = true
+    @State private var loadingProgress = 0.0
+    var body: some View {
+        if isLoading {
+            SplashLoadingView(progress: loadingProgress)
+                .task{
+                    for step in 1...100 {
+                        loadingProgress = Double(step) / 100
+                        try? await Task.sleep(for: .milliseconds(15))
+                    }
+                    isLoading = false
+                }
+        } else {
+            ContentView()
+            //is loaded
         }
     }
 }

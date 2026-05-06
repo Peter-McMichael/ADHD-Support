@@ -30,7 +30,8 @@ struct countdownTimer: View {
     @State private var breakMinutes: Int
     @State private var sessionType: SessionType = .focusTime
     @State private var isPressed = false
-    @State private var localMute: Bool = false
+//    @State private var localMute: Bool = false
+    @AppStorage("ambientLocallyMuted") private var localMute: Bool = false //change to global
    
     @AppStorage("vibrateOnSessionEnd") private var vibrateOnSessionEnd: Bool = true
     @AppStorage("soundOnSessionEnd") private var soundOnSessionEnd: Bool = true
@@ -220,24 +221,24 @@ struct countdownTimer: View {
                     range: 1...60
                 )
                 
-                if ambientEnabled, theme.ambientSound != nil {
-                    VStack {
-                        Spacer()
-                        HStack {
-                            Spacer()
-                            Button {
-                                localMute.toggle()
-                                applyAmbience(for: theme)
-                            } label: {
-                                Image(systemName: localMute ? "speaker.slash.fill" : "speaker.wave.2.fill")
-                            }
-                            .scaleEffect(isPressed ? 0.96 : 1.0)
-                            .animation(.spring(response: 0.3, dampingFraction: 0.5), value: isPressed)
-                            .buttonStyle(.plain)
-                            .padding(20)
-                        }
-                    }
-                }
+//                if ambientEnabled, theme.ambientSound != nil {
+//                    VStack {
+//                        Spacer()
+//                        HStack {
+//                            Spacer()
+//                            Button {
+//                                localMute.toggle()
+//                                applyAmbience(for: theme)
+//                            } label: {
+//                                Image(systemName: localMute ? "speaker.slash.fill" : "speaker.wave.2.fill")
+//                            }
+//                            .scaleEffect(isPressed ? 0.96 : 1.0)
+//                            .animation(.spring(response: 0.3, dampingFraction: 0.5), value: isPressed)
+//                            .buttonStyle(.plain)
+//                            .padding(20)
+//                        }
+//                    }
+//                }
             }
         }
             
@@ -245,8 +246,14 @@ struct countdownTimer: View {
         .onAppear {
             applyAmbience(for: theme)
         }
-        .onDisappear {
-            SoundManager.shared.stopAmbience()
+        .onChange(of: theme) {_, newTheme in
+            applyAmbience(for: newTheme)
+        }
+        .onChange(of: ambientEnabled) { _, _ in //if ambiece is enabled in settings, apply ambience. Not saving when leave app
+            applyAmbience(for: theme)
+        }
+        .onChange(of: localMute) {_,_ in // if mute is in seetings, mute. Not saving when leave app
+            applyAmbience(for: theme)
         }
         .onReceive(timer) { _ in
             guard timerActive else { return }
@@ -326,48 +333,38 @@ struct countdownTimer: View {
         value: Binding<Int>,
         range: ClosedRange<Int>
     ) -> some View {
+        
+        let sliderValue = Binding<Double>(
+            get: {
+                Double(value.wrappedValue)
+            },
+            set: { newValue in
+                value.wrappedValue = Int(newValue.rounded()) //mins
+            }
+        )
         VStack(spacing: 8) {
             Text(title)
                 .foregroundStyle(theme.focusColor)
-            HStack(spacing: 16) {
-                Text("\(value.wrappedValue)")
-                    .foregroundStyle(theme.focusColor)
-                    .frame(minWidth: 40, alignment: .leading)
-                
-                Spacer()
-                
-                Button {
-                    if value.wrappedValue > range.lowerBound {
-                        value.wrappedValue -= 1
-                    }
-                } label: {
-                    Image(systemName: "minus")
-                        .font(.title3.bold())
-                        .foregroundStyle(
-                            timerActive
-                            ? theme.textPrimary : theme.controlTint
-                        )
-                        .frame(width:44, height: 44)
+            VStack(spacing: 10) {
+                HStack {
+                    Text("\(value.wrappedValue)")
+                        .foregroundStyle(theme.focusColor)
+                        .padding(.leading, 175)
+                    
+                        
+                    
+                    Spacer()
                 }
-                .buttonStyle(.plain)
+                .frame(alignment: .center)
+                
+                Slider(
+                    value: sliderValue,
+                    in: Double(range.lowerBound)...Double(range.upperBound),
+                    step: 1
+                )
+                .tint(theme.focusColor)
                 .disabled(timerActive)
-                
-                Button {
-                    if value.wrappedValue < range.upperBound {
-                        value.wrappedValue += 1
-                    }
-                } label: {
-                    Image(systemName: "plus")
-                        .font(.title3.bold())
-                        .foregroundStyle(
-                            timerActive
-                            ? theme.textPrimary : theme.controlTint
-                        )
-                        .frame(width:44, height: 44)
-                }
-                .buttonStyle(.plain)
-                .disabled(timerActive)
-                }
+            }
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
             .background(theme.background)

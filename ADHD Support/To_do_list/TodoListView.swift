@@ -265,7 +265,13 @@ struct TodoListView: View {
    @EnvironmentObject private var store: TodoStorage
    @EnvironmentObject private var achievementStore: AchievementStore
 
+
    let theme: AppTheme
+    
+//    @State private var draftTitle: String = ""
+//    @State private var chosenPriorityOverride: Priority? = nil
+    @State private var showClearCompletedAlert = false
+    
 
    var body: some View {
        ZStack {
@@ -301,12 +307,21 @@ struct TodoListView: View {
        }
        .toolbar {
            ToolbarItem(placement: .topBarTrailing) {
-               Button { store.clearCompleted() } label: {
+               Button { showClearCompletedAlert = true } label: {
                    Image(systemName: "trash")
                }
            }
        }
+       .alert("Delete Completed Tasks?", isPresented: $showClearCompletedAlert) {
+           Button("Cancel", role: .cancel) { }
+           Button("Delete", role: .destructive) {
+               store.clearCompleted()
+           }
+       } message: {
+           Text("Are you sure you want to delete all completed tasks?")
+       }
    }
+    
 
    // MARK: - Actions
    private func addTask(title: String, chosenPriorityOverride: Priority?) {

@@ -13,6 +13,14 @@ final class SoundManager {
     private var player: AVAudioPlayer?
     private var ambiencePlayer: AVAudioPlayer?
     
+    
+    //tracks which ambience is loaded and makes it run smoohthly.
+    //Does not restart loop
+    
+    private var currentAmbienceKey: String?
+    
+    
+    
     func playEndOfSessionSound() {
         guard let alarm = Bundle.main.url(forResource: "Chime", withExtension: "wav") else {
             return
@@ -28,6 +36,18 @@ final class SoundManager {
     }
     
     func startAmbience(name: String, ext: String) {
+        let newKey = "\(name).\(ext)"
+        
+        //if the same ambience is already playing, do nothing (return empty)
+        if currentAmbienceKey == newKey, let ambiencePlayer, ambiencePlayer.isPlaying {
+            return
+        }
+        // if the same ambience is loaded by paused, just resume it
+        if currentAmbienceKey == newKey, let ambiencePlayer {
+            ambiencePlayer.play()
+            return
+        }
+        
         ambiencePlayer?.stop()
         ambiencePlayer = nil
         

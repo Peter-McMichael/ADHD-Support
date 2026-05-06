@@ -125,6 +125,14 @@ struct ContentView: View {
                     
                 }
             }
+            .overlay(alignment: .bottomTrailing) {
+                AmbientMuteButton(theme: theme)
+                    .padding(.trailing, 16)
+                    .padding(.bottom, 12)
+                    .offset(y: 12)
+                    .offset(x: -8)
+            }
+        
             .animation(.spring(response: 0.35, dampingFraction: 0.85), value: achievementStore.newlyUnlockedAchievement)
         }
     }
@@ -196,4 +204,27 @@ struct ContentView: View {
             .shadow(radius: 10)
         }
     }
+
+private struct AmbientMuteButton: View {
+    let theme: AppTheme
+    @AppStorage("AmbientEnabled") private var ambientEnabled: Bool = true
+    @AppStorage("ambientLocallyMuted") private var ambientLocallyMuted: Bool = false
+    
+    var body: some View {
+        if ambientEnabled, theme.ambientSound != nil {
+            Button {
+                ambientLocallyMuted.toggle()
+            } label: {
+                Image(systemName: ambientLocallyMuted ? "speaker.slash.fill" : "speaker.wave.2.fill")
+                    .font(.title3)
+                    .foregroundStyle(theme.controlTint)
+                    .frame(width: 44, height: 44)
+                    .background(Color.white.opacity(0.7))
+                    .clipShape(Circle())
+                    
+            }
+            .buttonStyle(.plain)
+        }
+    }
+}
 
