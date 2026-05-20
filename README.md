@@ -3,3 +3,5 @@
 1. The progress bar is working perfectly for some reason after testing it just now on the iPhone 17 simulator. IDK why blank screen was showing earlier. I didnt change anything at all in the code.
 
 2. Could I have access to the BVT sheet? for some reason its saying I don't have permission. 
+
+3. I think we need to work on the ML, I will try to work on it later. Right now, it is not recognizing any keywords and marking every task as "Medium (0%)"
