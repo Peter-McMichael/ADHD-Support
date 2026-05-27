@@ -112,18 +112,25 @@ struct ContentView: View {
         
         //overlay acts as hitzone for only swipe gesture
         .overlay {
-            HStack {
-                Color.clear //so that you can see other buttons.
-                    .frame(width: 100)
-                    .contentShape(Rectangle())
-                    .gesture(tabSwipeGesture)
-                
-                Spacer()
-                
+            VStack(spacing: 0) {
                 Color.clear
-                    .frame(width: 100)
-                    .contentShape(Rectangle())
-                    .gesture(tabSwipeGesture)
+                    .frame(height: 190)
+                    .allowsHitTesting(false)
+                
+                HStack {
+                    Color.clear
+                        .frame(width: 22)
+                        .contentShape(Rectangle())
+                        .gesture(tabSwipeGesture)
+                    
+                    Spacer()
+                    
+                    Color.clear
+                        .frame(width: 22)
+                        .contentShape(Rectangle())
+                        .gesture(tabSwipeGesture)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
@@ -179,6 +186,7 @@ struct ContentView: View {
         
             .animation(.spring(response: 0.35, dampingFraction: 0.85), value: achievementStore.newlyUnlockedAchievement)
         }
+    
     
     
     

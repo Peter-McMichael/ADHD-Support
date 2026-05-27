@@ -1,16 +1,10 @@
-//
-//  TaskClassifier.swift
-//  ADHD Support
-//
-//  Created by Peter McMichael on 1/20/26.
-//
-
 import Foundation
 import CoreML
 
 final class TaskClassifier {
     static let shared = TaskClassifier()
     
+    //name of model
     private let model: Todo_list?
     
     private init() {
@@ -34,7 +28,7 @@ final class TaskClassifier {
         
         do {
             let result = try model.prediction(text: trimmed)
-            let confidence = result.bestConfidence()
+            let confidence = result.bestConfidence(for: result.label)
             
             
             return Prediction(label: result.label, confidence: confidence)
@@ -53,13 +47,18 @@ private extension String {
     }
 }
 
-private extension Todo_listOutput {
-    func bestConfidence() -> Double {
-        let mirror = Mirror(reflecting: self)
-        
-        if let probs = mirror.children.compactMap({ $0.value as? [String: Double]}).first {
-            return probs[label] ?? 0.0
+private extension MLFeatureProvider {
+    func bestConfidence(for label: String) -> Double {
+        for name in featureNames {
+            guard let feature = featureValue(for: name), feature.type == .dictionary else { continue }
+
+            if let confidence = feature.dictionaryValue.first(where: { entry in
+                String(describing: entry.key).caseInsensitiveCompare(label) == .orderedSame
+            })?.value {
+                return confidence.doubleValue
+            }
         }
+
         return 0.0
     }
 }

@@ -42,14 +42,27 @@ final class PrioritiesClassifier {
         
         do {
             let result = try model.prediction(text: trimmed)
-            let confidence = result.bestConfidence()
+            let confidence = result.bestConfidence(for: result.label)
             
             
-            return Prediction(label: result.label.lowercased(), confidence: confidence)
-            
+            return Prediction(label: normalizedPriorityLabel(result.label), confidence: confidence)
             
         } catch {
             return .error
+        }
+    }
+    
+    private func normalizedPriorityLabel(_ label: String) -> String {
+        switch label.trimmed.lowercased() {
+            case "low":
+                return "low"
+            case "high":
+                return "high"
+        case "urgent":
+            return "urgent"
+        default:
+            return "medium"
+            
         }
     }
 }
@@ -62,11 +75,15 @@ private extension String {
 }
 
 private extension PrioritiesOutput {
-    func bestConfidence() -> Double {
-        let mirror = Mirror(reflecting: self)
-        
-        if let probs = mirror.children.compactMap({ $0.value as? [String: Double]}).first {
-            return probs[label] ?? 0.0
+    func bestConfidence(for label: String) -> Double {
+        for name in featureNames {
+            guard let feature = featureValue(for: name), feature.type == .dictionary else { continue }
+            
+            if let confidence = feature.dictionaryValue.first(where: { entry in
+                String(describing: entry.key).caseInsensitiveCompare(label) == .orderedSame
+            })?.value {
+                return confidence.doubleValue
+            }
         }
         return 0.0
     }
